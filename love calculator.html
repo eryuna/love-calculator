@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff0f5">
+  <title>Love Match ♡ | Love Compatibility Calculator</title>
+  <style>
+    :root {
+      --pink: #f6a9c4;
+      --pink-dark: #d85d8a;
+      --pink-light: #fff0f5;
+      --lavender: #e8ddfb;
+      --ink: #493447;
+      --muted: #927e91;
+      --white: #fffdfd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px 16px;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 15%, #ffe0ec 0, transparent 30%),
+        radial-gradient(circle at 88% 80%, #e8ddfb 0, transparent 32%),
+        linear-gradient(135deg, #fff7fa, #f9f2ff);
+    }
+
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      opacity: .65;
+      color: #e79ab7;
+      animation: float 5s ease-in-out infinite;
+      user-select: none;
+    }
+    .s1 { top: 8%; left: 8%; font-size: 27px; }
+    .s2 { top: 17%; right: 10%; font-size: 20px; animation-delay: -2s; }
+    .s3 { bottom: 12%; left: 12%; font-size: 24px; animation-delay: -1s; }
+    .s4 { bottom: 9%; right: 9%; font-size: 30px; animation-delay: -3s; }
+
+    .card {
+      width: min(100%, 490px);
+      position: relative;
+      padding: clamp(24px, 6vw, 42px);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 30px;
+      background: rgba(255,253,253,.88);
+      box-shadow: 0 22px 70px rgba(180, 117, 151, .18);
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 17px 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 8vw, 46px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+    }
+    h1 span { color: var(--pink-dark); }
+
+    .intro {
+      max-width: 330px;
+      margin: 0 auto 27px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .heart-stage {
+      height: 100px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+    }
+
+    .heart {
+      color: #f18db2;
+      font-size: 72px;
+      line-height: 1;
+      filter: drop-shadow(0 8px 12px rgba(230, 115, 160, .24));
+      animation: heartbeat 1.8s ease-in-out infinite;
+    }
+    .heart.beating { animation: pop .7s ease-in-out; }
+
+    .form { display: grid; gap: 15px; text-align: left; }
+    label {
+      display: block;
+      margin: 0 0 7px 3px;
+      color: #70566c;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1.5px solid #f2dce7;
+      border-radius: 15px;
+      outline: none;
+      background: #fffafd;
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input::placeholder { color: #c0aeba; }
+    input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(246,169,196,.18);
+    }
+
+    .calculate {
+      width: 100%;
+      margin-top: 5px;
+      padding: 16px 18px;
+      border: 0;
+      border-radius: 16px;
+      background: linear-gradient(110deg, #f5a8c3, #d9baf4);
+      color: #512e47;
+      font: inherit;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 9px 20px rgba(221, 146, 183, .23);
+      transition: transform .18s, box-shadow .18s;
+    }
+    .calculate:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(221,146,183,.3); }
+    .calculate:active { transform: translateY(0) scale(.99); }
+
+    .result {
+      display: none;
+      margin-top: 26px;
+      padding: 22px 17px;
+      border: 1px solid #f8dce8;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #fff2f7, #f8f2ff);
+      animation: rise .45s ease both;
+    }
+    .result.show { display: block; }
+    .match-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+    .names {
+      margin: 10px 0 2px;
+      font-family: Georgia, serif;
+      font-size: 19px;
+      overflow-wrap: anywhere;
+    }
+    .score {
+      margin: 4px 0 8px;
+      color: var(--pink-dark);
+      font-size: clamp(48px, 12vw, 64px);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -2px;
+    }
+    .message {
+      margin: 0 auto;
+      max-width: 300px;
+      color: #745d71;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .again {
+      margin-top: 17px;
+      padding: 10px 15px;
+      border: 1px solid #edc6d9;
+      border-radius: 999px;
+      background: #fffafd;
+      color: #9e5277;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .notice {
+      margin: 22px 0 0;
+      color: #a18d9f;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .notice strong { color: #8d7187; }
+
+    .error {
+      display: none;
+      margin: -3px 2px 0;
+      color: #b84770;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .error.show { display: block; }
+
+    .floating-heart {
+      position: fixed;
+      z-index: 10;
+      pointer-events: none;
+      animation: fly 1.6s ease-out forwards;
+      font-size: 22px;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.1); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.07); }
+    }
+    @keyframes pop {
+      0% { transform: scale(.7) rotate(-12deg); }
+      55% { transform: scale(1.25) rotate(8deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-13px) rotate(8deg); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fly {
+      from { opacity: 1; transform: translateY(0) scale(.8) rotate(0); }
+      to { opacity: 0; transform: translateY(-130px) scale(1.5) rotate(22deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <span class="sparkle s1" aria-hidden="true">✦</span>
+  <span class="sparkle s2" aria-hidden="true">♡</span>
+  <span class="sparkle s3" aria-hidden="true">✧</span>
+  <span class="sparkle s4" aria-hidden="true">♡</span>
+
+  <main class="card">
+    <div class="eyebrow">A little love game</div>
+    <h1>Love <span>Match</span> ♡</h1>
+    <p class="intro">Two names, one little love experiment. Let's see what the universe says… just for fun!</p>
+
+    <div class="heart-stage" aria-hidden="true">
+      <div class="heart" id="mainHeart">♡</div>
+    </div>
+
+    <form class="form" id="loveForm">
+      <div>
+        <label for="nameOne">YOUR NAME</label>
+        <input id="nameOne" name="nameOne" type="text" maxlength="40"
+               placeholder="e.g. Jamie" autocomplete="given-name" required>
+      </div>
+      <div>
+        <label for="nameTwo">YOUR CRUSH'S NAME</label>
+        <input id="nameTwo" name="nameTwo" type="text" maxlength="40"
+               placeholder="e.g. Alex" autocomplete="off" required>
+      </div>
+      <p class="error" id="error" role="alert">Please enter two names to calculate your love match. ♡</p>
+      <button class="calculate" type="submit">Calculate Love ♡</button>
+    </form>
+
+    <section class="result" id="result" aria-live="polite" aria-atomic="true">
+      <p class="match-label">Your love match is</p>
+      <p class="names" id="resultNames"></p>
+      <div class="score" id="score">0%</div>
+      <p class="message" id="message"></p>
+      <button class="again" id="tryAgain" type="button">Try another match ↻</button>
+    </section>
+
+    <p class="notice">♡ <strong>Just for fun!</strong> This score is generated from the names and is not a scientific measure or prediction of real-life compatibility.</p>
+  </main>
+
+  <script>
+    const form = document.getElementById("loveForm");
+    const nameOne = document.getElementById("nameOne");
+    const nameTwo = document.getElementById("nameTwo");
+    const result = document.getElementById("result");
+    const resultNames = document.getElementById("resultNames");
+    const score = document.getElementById("score");
+    const message = document.getElementById("message");
+    const error = document.getElementById("error");
+    const mainHeart = document.getElementById("mainHeart");
+
+    // Stable hash: the same pair of names always produces the same score.
+    // Sorting the normalized names makes the result independent of name order.
+    function getCompatibility(nameA, nameB) {
+      const normalize = (name) => name.trim().toLocaleLowerCase()
+        .normalize("NFKC").replace(/\s+/g, " ");
+      const pair = [normalize(nameA), normalize(nameB)].sort().join("|");
+      let hash = 2166136261;
+
+      for (let i = 0; i < pair.length; i++) {
+        hash ^= pair.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+
+      const unsignedHash = hash >>> 0;
+      return 50 + (unsignedHash % 51); // 50% to 100%, for playful results only
+    }
+
+    function getMessage(value) {
+      if (value >= 95) return "Whoa, main-character couple energy! 💞 Don't forget to communicate, too.";
+      if (value >= 85) return "The butterflies are doing backflips! 🦋 Maybe there's a cute story here.";
+      if (value >= 75) return "A sweet little spark! ✨ Time for a kind hello and a real conversation.";
+      if (value >= 65) return "Potentially iconic bestie-to-something energy. 💗 Let things unfold naturally!";
+      if (value >= 55) return "A mysterious plot twist! 💌 Get to know each other and see what happens.";
+      return "The calculator says 'keep it a mystery'! 🌷 Real chemistry is more than a number.";
+    }
+
+    function launchHearts() {
+      const symbols = ["♡", "♥", "💕", "💗", "✧"];
+      for (let i = 0; i < 14; i++) {
+        const heart = document.createElement("span");
+        heart.className = "floating-heart";
+        heart.textContent = symbols[i % symbols.length];
+        heart.style.left = (10 + Math.random() * 80) + "vw";
+        heart.style.top = (45 + Math.random() * 35) + "vh";
+        heart.style.animationDelay = (Math.random() * .35) + "s";
+        document.body.appendChild(heart);
+        heart.addEventListener("animationend", () => heart.remove(), { once: true });
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const first = nameOne.value.trim();
+      const second = nameTwo.value.trim();
+
+      if (!first || !second) {
+        error.classList.add("show");
+        return;
+      }
+      error.classList.remove("show");
+
+      const compatibility = getCompatibility(first, second);
+      resultNames.textContent = first + " + " + second;
+      score.textContent = compatibility + "%";
+      message.textContent = getMessage(compatibility);
+      result.classList.remove("show");
+      void result.offsetWidth;
+      result.classList.add("show");
+
+      mainHeart.textContent = "♥";
+      mainHeart.classList.remove("beating");
+      void mainHeart.offsetWidth;
+      mainHeart.classList.add("beating");
+      launchHearts();
+    });
+
+    [nameOne, nameTwo].forEach((input) => {
+      input.addEventListener("input", () => error.classList.remove("show"));
+    });
+
+    document.getElementById("tryAgain").addEventListener("click", () => {
+      form.reset();
+      result.classList.remove("show");
+      error.classList.remove("show");
+      mainHeart.textContent = "♡";
+      nameOne.focus();
+    });
+  </script>
+</body>
+</html>
